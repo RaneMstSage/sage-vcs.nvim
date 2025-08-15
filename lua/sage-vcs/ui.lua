@@ -23,7 +23,7 @@ local function create_buffer(title, content, filetype)
     vim.api.nvim_win_set_buf(0, buf)
 
     -- Add basic keymap to close buffer
-    vim.api.nvim_buf_set_keymap(buf, 'n', 'q' '<cmd>close<CR>', { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(buf, 'n', 'q', '<cmd>close<CR>', { noremap = true, silent = true })
 
     return buf
 end
