@@ -45,7 +45,7 @@ function M.show_status(data)
         if location == '' then
             table.insert(line, 'Location: (root)')
         else
-            table.insert(lines, 'Location: ' .. location)
+            table.insert(lines, 'Location: ' .. svn_info.relative_url)
         end
     end
 
