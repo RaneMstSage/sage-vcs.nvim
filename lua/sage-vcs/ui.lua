@@ -12,8 +12,6 @@ local function create_buffer(title, content, filetype)
     -- Set buffer options
     vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
     vim.api.nvim_set_option_value('buftype', 'nofile', { buf = buf })
-    vim.api.nvim_set_option_value('number', false, { buf = buf })
-    vim.api.nvim_set_option_value('relativenumber', false, { buf = buf })
     vim.api.nvim_buf_set_name(buf, title)
 
     if filetype then
@@ -23,6 +21,10 @@ local function create_buffer(title, content, filetype)
     -- Open buffer in split
     vim.cmd('split')
     vim.api.nvim_win_set_buf(0, buf)
+
+    -- Set window options
+    vim.api.nvim_set_option_value('number', false, { win = 0 })
+    vim.api.nvim_set_option_value('relativenumber', false { win = 0 })
 
     -- Add basic keymap to close buffer
     vim.api.nvim_buf_set_keymap(buf, 'n', 'q', '<cmd>bdelete<CR>', { noremap = true, silent = true })
