@@ -24,7 +24,7 @@ local function create_buffer(title, content, filetype)
 
     -- Set window options
     vim.api.nvim_set_option_value('number', false, { win = 0 })
-    vim.api.nvim_set_option_value('relativenumber', false { win = 0 })
+    vim.api.nvim_set_option_value('relativenumber', false, { win = 0 })
 
     -- Add basic keymap to close buffer
     vim.api.nvim_buf_set_keymap(buf, 'n', 'q', '<cmd>bdelete<CR>', { noremap = true, silent = true })
