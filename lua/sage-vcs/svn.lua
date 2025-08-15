@@ -36,6 +36,28 @@ function M.status()
     end)
 end
 
+-- Get SVN repository info
+function M.get_svn_info()
+    local result = {}
+
+    -- Run svn info synchonously for now (we need the data immediately)
+    local handle = io.popen('svn info 2>/dev/null')
+    if handle then
+        for line in handle:lines() do
+            if line:match('^URL:') then
+                result.url = line.match('^URL:%s*(.+)')
+            elseif line:match('^Repository Root:') then
+                result.root = line:match('^Repository Root:%s*(.+)')
+            elseif line:match('^Relative URL:') then
+                result.relative_url = line:match('^Relative URL:%s*(.+)')
+            end
+        end
+        handle:close()
+    end
+
+    return result
+end
+
 -- Show SVN diff
 function M.diff()
     run_svn_command({ 'diff' }, function(exit_code, data)

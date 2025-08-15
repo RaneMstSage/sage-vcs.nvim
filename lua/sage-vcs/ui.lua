@@ -12,6 +12,8 @@ local function create_buffer(title, content, filetype)
     -- Set buffer options
     vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
     vim.api.nvim_set_option_value('buftype', 'nofile', { buf = buf })
+    vim.api.nvim_set_option_value('number', false, { buf = buf })
+    vim.api.nvim_set_option_value('relativenumber', false, { buf = buf })
     vim.api.nvim_buf_set_name(buf, title)
 
     if filetype then
@@ -32,9 +34,20 @@ end
 function M.show_status(data)
     local lines = {}
 
+    -- Get SVN info for header
+    local svn_info = require('sage-vcs.svn').get_svn_info()
+
     -- Header Section
-    table.insert(lines, 'SVN Status')
-    table.insert(lines, 'Help: g?')
+    if svn_info.relative_url then
+        local branch = svn_info.relative_url:gsub('^%^/', '') -- Remove ^/ prefix
+        table.insert(lines, 'Branch: ' .. branch)
+    end
+
+    if svn_info.root then
+        table.insert(lines, 'Root: ' .. svn_info.root)
+    end
+
+    table.insert(lines, 'Help: h?')
     table.insert(lines, '')
 
     -- Group files by status
