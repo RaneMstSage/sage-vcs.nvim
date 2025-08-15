@@ -31,15 +31,65 @@ end
 -- Show SVN status output
 function M.show_status(data)
     local lines = {}
+
+    -- Header Section
+    table.insert(lines, 'SVN Status')
+    table.insert(lines, 'Help: g?')
+    table.insert(lines, '')
+
+    -- Group files by status
+    local modified = {}
+    local added = {}
+    local deleted = {}
+    local untracked = {}
+    local conflicted = {}
+
     for _, line in ipairs(data) do
         if line ~= '' then
-            table.insert(lines, line)
+            local status = line:sub(1,1)
+            local file = line:sub(9):gsub('^%s+', '') -- Remove leading spaces
+
+            if status == 'M' then
+                table.insert(modified, file)
+            elseif status == 'A' then
+                table.insert(added, file)
+            elseif status == 'D' then
+                table.insert(deleted, file)
+            elseif status == '?' then
+                table.insert(untracked, file)
+            elseif status == 'C' then
+                table.insert(conflicted, file)
+            end
         end
     end
 
-    if #lines == 0 then
-        vim.notify('No changes in working directory', vim.log.levels.INFO)
-        return
+    -- Display grouped sections
+    if #modified > 0 then
+        table.insert(lines, 'Modified (' .. #modified .. ')')
+        for _, line in ipairs(modified) do
+            table.insert(lines, 'M ' .. file)
+        end
+        table.insert(lines, '')
+    end
+
+    if #added > 0 then
+        table.insert(lines, 'Added (' .. #added .. ')')
+        for _, line in ipairs(added) do
+            table.insert(line, 'A ' .. file)
+        end
+        table.insert(lines, '')
+    end
+
+    if #untracked > 0 then
+        table.insert(lines, 'Untracked (' .. #untracked .. ')')
+        for _, line in ipairs(untracked) do
+            table.insert(lines, '? ' .. file)
+        end
+        table.insert(lines, '')
+    end
+
+    if #lines == 3 then -- Only header
+        table.insert(lines, 'No changes in working directory')
     end
 
     create_buffer('SVN Status', lines)
