@@ -8,7 +8,7 @@ local function run_svn_command(args, callback)
 
     vim.fn.jobstart(cmd, {
         stdout_buffered = true,
-        stderr_buffererd = true,
+        stderr_buffered = true,
         on_exit = function (_, exit_code)
             if callback then
                 callback(exit_code)
@@ -27,11 +27,20 @@ local function run_svn_command(args, callback)
     })
 end
 
+-- Show Status
+function M.status()
+    run_svn_command({ 'status' }, function (exit_code, data)
+        if exit_code == 0 and data then
+            require('sage-vcs.ui').show_status(data)
+        end
+    end)
+end
+
 -- Show SVN diff
 function M.diff()
     run_svn_command({ 'diff' }, function(exit_code, data)
         if exit_code == 0 and data then
-            require('sage-vcs.ui').show_dif(data)
+            require('sage-vcs.ui').show_diff(data)
         end
     end)
 end

@@ -20,7 +20,7 @@ function M.setup()
     end, { desc = 'Show SVN log' })
 
     vim.api.nvim_create_user_command('SageAdd', function()
-        require('sage-vcs.svn').add(opt.args)
+        require('sage-vcs.svn').add(opts.args)
     end, { 
             desc = 'Add files to SVN',
             nargs = '*',        -- Accept multiple arguments

@@ -20,7 +20,7 @@ local function create_buffer(title, content, filetype)
 
     -- Open buffer in split
     vim.cmd('split')
-    vim.api.nvim_win_set_buff(0, buf)
+    vim.api.nvim_win_set_buf(0, buf)
 
     return buf
 end
