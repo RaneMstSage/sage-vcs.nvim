@@ -50,6 +50,8 @@ function M.get_svn_info()
                 result.root = line:match('^Repository Root:%s*(.+)')
             elseif line:match('^Relative URL:') then
                 result.relative_url = line:match('^Relative URL:%s*(.+)')
+            elseif line:match('^Working Copy Root Path:') then
+                result.working_copy_root = line:match('^Working Copy Root Path:%s*(.+)')
             end
         end
         handle:close()

@@ -40,14 +40,32 @@ function M.show_status(data)
     local svn_info = require('sage-vcs.svn').get_svn_info()
 
     -- Header Section
+    -- SVN Location (where in repository structure)
     if svn_info.relative_url then
-        local branch = svn_info.relative_url:gsub('^%^/', '') -- Remove ^/ prefix
-        table.insert(lines, 'Branch: ' .. branch)
+        if location == '' then
+            table.insert(line, 'Location: (root)')
+        else
+            table.insert(lines, 'Location: ' .. location)
+        end
     end
 
+    -- Current Path (where in working copy)
+    local current_dir = vim.fn.getcwd()
+    if svn_info.working_copy_root then
+        local relative_path = current_dir:gsub('^' .. vim.pesc(svn_info.working_copy_root), '')
+        relative_path = relative_path:gsub('^[/\\]', '') -- Remove leading slash/backslash
+        if relative_path == '' then
+            table.insert(lines, 'Path: (root)')
+        else
+            table.insert(lines, 'Path: ' .. relative_path .. '/')
+        end
+    end
+
+    -- Repository Root
     if svn_info.root then
         table.insert(lines, 'Root: ' .. svn_info.root)
     end
+
 
     table.insert(lines, 'Help: h?')
     table.insert(lines, '')
