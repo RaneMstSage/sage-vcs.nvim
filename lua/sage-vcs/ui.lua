@@ -42,8 +42,8 @@ function M.show_status(data)
     -- Header Section
     -- SVN Location (where in repository structure)
     if svn_info.relative_url then
-        if location == '' then
-            table.insert(line, 'Location: (root)')
+        if svn_info.relative_url == '^/' then
+            table.insert(lines, 'Location: (root)')
         else
             table.insert(lines, 'Location: ' .. svn_info.relative_url)
         end
@@ -121,7 +121,7 @@ function M.show_status(data)
         table.insert(lines, '')
     end
 
-    if #lines == 3 then -- Only header
+    if #lines == 5 then -- Only header
         table.insert(lines, 'No changes in working directory')
     end
 
