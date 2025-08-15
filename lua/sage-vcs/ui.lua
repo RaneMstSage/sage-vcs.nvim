@@ -66,7 +66,7 @@ function M.show_status(data)
     -- Display grouped sections
     if #modified > 0 then
         table.insert(lines, 'Modified (' .. #modified .. ')')
-        for _, line in ipairs(modified) do
+        for _, file in ipairs(modified) do
             table.insert(lines, 'M ' .. file)
         end
         table.insert(lines, '')
@@ -74,15 +74,15 @@ function M.show_status(data)
 
     if #added > 0 then
         table.insert(lines, 'Added (' .. #added .. ')')
-        for _, line in ipairs(added) do
-            table.insert(line, 'A ' .. file)
+        for _, file in ipairs(added) do
+            table.insert(lines, 'A ' .. file)
         end
         table.insert(lines, '')
     end
 
     if #untracked > 0 then
         table.insert(lines, 'Untracked (' .. #untracked .. ')')
-        for _, line in ipairs(untracked) do
+        for _, file in ipairs(untracked) do
             table.insert(lines, '? ' .. file)
         end
         table.insert(lines, '')
