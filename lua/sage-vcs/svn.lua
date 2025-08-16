@@ -29,7 +29,7 @@ end
 
 -- Find SVN root by walking up directory tree
 local function find_svn_root(start_path)
-    local current = start_path or vim.fn.expan('%:p:h')
+    local current = start_path or vim.fn.expand('%:p:h')
     local max_depth = 20 -- Safety limit
     local depth = 0
 
@@ -65,7 +65,7 @@ function M.status()
     run_svn_command({ 'status' }, function (exit_code, data)
         vim.cmd('cd ' .. old_cwd)   -- restore original directory
         if exit_code == 0 and data then
-            require('sage-vcs.ui').show_status(data)
+            require('sage-vcs.ui')
         end
     end)
 end
@@ -79,10 +79,10 @@ function M.get_svn_info()
         return nil  -- Not in SVN repository
     end
 
-    local resuly = { working_copy_root = svn_root }
+    local result = { working_copy_root = svn_root }
 
     -- Run svn info from the SVN root directory
-    local handl = io.popen('cd "' .. svn_root '" && svn info 2>/dev/null')
+    local handle = io.popen('cd "' .. svn_root '" && svn info 2>/dev/null')
     if handle then
         for line in handle:lines() do
             if line:match('^URL:') then
