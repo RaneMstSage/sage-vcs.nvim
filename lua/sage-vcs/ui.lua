@@ -50,10 +50,10 @@ function M.show_status(data)
     end
 
     -- Current Path (where in working copy)
-    local current_dir = vim.fn.getcwd()
-    if svn_info.working_copy_root then
-        local relative_path = current_dir:gsub('^' .. vim.pesc(svn_info.working_copy_root), '')
-        relative_path = relative_path:gsub('^[/\\]', '') -- Remove leading slash/backslash
+    local current_file_dir = vim.fn.expand('%:p:h')
+    if svn_info and svn_info.working_copy_root then
+        local relative_path = current_file_dir:gsub('^' .. vim.pasc(svn_info.working_copy_root), '')
+        relative_path = relativepath:gsub('^[/\\]', '') -- Remove leading slash/backslash
         if relative_path == '' then
             table.insert(lines, 'Path: (root)')
         else

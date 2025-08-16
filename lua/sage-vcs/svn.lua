@@ -27,9 +27,43 @@ local function run_svn_command(args, callback)
     })
 end
 
+-- Find SVN root by walking up directory tree
+local function find_svn_root(start_path)
+    local current = start_path or vim.fn.expan('%:p:h')
+    local max_depth = 20 -- Safety limit
+    local depth = 0
+
+    while current ~= '/' and current ~= '' and depth < max_depth do
+        if vim.fn.isdirectory(current .. '/.svn') == 1 then
+            return current
+        end
+
+        local parent = vim.fn.fnamemodify(current, ':h')
+        if parent == current then   -- Hit filesystem root
+            break
+        end
+
+        current = parent
+        depth = depth + 1
+    end
+
+    return nil -- No SVN found
+end
+
 -- Show Status
 function M.status()
+    local svn_info = M.get_svn_info()
+    if not svn_info then
+        vim.notify('Not in an SVN working directory', vim.log.levels.ERROR)
+        return
+    end
+
+    -- Change to SVN root before running command
+    local old_cwd = vim.fn.getcwd()
+    vim.cmd('cd ' .. svn_info.working_copy_root)
+
     run_svn_command({ 'status' }, function (exit_code, data)
+        vim.cmd('cd ' .. old_cwd)   -- restore original directory
         if exit_code == 0 and data then
             require('sage-vcs.ui').show_status(data)
         end
@@ -38,20 +72,25 @@ end
 
 -- Get SVN repository info
 function M.get_svn_info()
-    local result = {}
+    local current_file_dir = vim.fn.expand('%:p:h')
+    local svn_root = find_svn_root(current_file_dir)
 
-    -- Run svn info synchonously for now (we need the data immediately)
-    local handle = io.popen('svn info 2>/dev/null')
+    if not svn_root then
+        return nil  -- Not in SVN repository
+    end
+
+    local resuly = { working_copy_root = svn_root }
+
+    -- Run svn info from the SVN root directory
+    local handl = io.popen('cd "' .. svn_root '" && svn info 2>/dev/null')
     if handle then
         for line in handle:lines() do
             if line:match('^URL:') then
                 result.url = line:match('^URL:%s*(.+)')
             elseif line:match('^Repository Root:') then
-                result.root = line:match('^Repository Root:%s*(.+)')
+                result.root = line:match('Repository Root:%s*(.+)')
             elseif line:match('^Relative URL:') then
                 result.relative_url = line:match('^Relative URL:%s*(.+)')
-            elseif line:match('^Working Copy Root Path:') then
-                result.working_copy_root = line:match('^Working Copy Root Path:%s*(.+)')
             end
         end
         handle:close()
